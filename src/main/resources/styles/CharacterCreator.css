@@ -1,0 +1,47 @@
+.classImage{
+    -fx-scale-x:.2;
+    -fx-scale-y:.2;
+}
+.buttons {
+    -fx-pref-height: 20;
+    -fx-pref-width: 125;
+    -fx-font-family: 'Times New Roman';
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+RadioButton, Label{
+    -fx-font-family: "Times New Roman";
+    -fx-font-size: 20px;
+    -fx-font-weight: normal
+}
+RadioButton{
+    -fx-padding: 5,0,5,0;
+}
+HBox{
+    -fx-alignment: center;
+}
+TextField{
+    -fx-pref-width: 35;
+    -fx-padding: 3,0,3,0;
+}
+.centerBox{
+    -fx-alignment: center-right;
+}
+.statBox{
+    -fx-orientation: right;
+    -fx-padding: 2,0,3,0;
+}
+.statFields{
+    -fx-padding: 1,0,1,0;
+}
+VBox{
+   -fx-padding: 20;
+}
+.characterName{
+    -fx-pref-width: 250;
+    -fx-pref-height: 35;
+}
+ListView{
+    -fx-pref-width: 200;
+    -fx-pref-height: 400;
+}

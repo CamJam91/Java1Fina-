@@ -1,6 +1,11 @@
 package com.example.java1final;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -14,6 +19,8 @@ import javafx.scene.control.ListView;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class CharacterCreatorWindow extends Application{
     @Override
@@ -35,6 +42,7 @@ public class CharacterCreatorWindow extends Application{
         VBox statRadioVBox = new VBox();
         VBox statFieldVB = new VBox();
         VBox statRadioVB = new VBox();
+        VBox centerVB = new VBox();
 
         //buttons
         Button createCharacter = new Button("Create");
@@ -56,11 +64,18 @@ public class CharacterCreatorWindow extends Application{
         Label intelLB = new Label("Intelligence"); Label wisLB = new Label("Wisdom"); Label charLB = new Label("Charisma");
 
         //textFields
-        TextField characterName = new TextField();
+        TextField nameTF = new TextField();
         //stat Text Fields
         TextField strengthTF = new TextField(); TextField dexTF = new TextField(); TextField constTF = new TextField();
         TextField intelTF = new TextField(); TextField wisTF = new TextField(); TextField charTF = new TextField();
 
+        //images
+        Image defaultImg = new Image(getClass().getResourceAsStream("/images/default.jpg"));
+        Image fighterImg = new Image(getClass().getResourceAsStream("/images/fighter.jpg"));
+        Image rogueImg = new Image(getClass().getResourceAsStream("/images/rogue.jpg"));
+        Image wizardImg = new Image(getClass().getResourceAsStream("/images/wizard.jpg"));
+        Image bardImg = new Image(getClass().getResourceAsStream("/images/bard.jpg"));
+        ImageView characterIV = new ImageView(defaultImg);
 
 
 
@@ -70,22 +85,100 @@ public class CharacterCreatorWindow extends Application{
         //buttons
         characterClassVB.getChildren().addAll(fighterRB, rogueRB, wizardRB, bardRB);
         //boxes
-        createCharacterHB.getChildren().addAll(deleteCharacter,namePrompt,characterName,createCharacter);
+        createCharacterHB.getChildren().addAll(deleteCharacter,namePrompt,nameTF,createCharacter);
         listVB.getChildren().addAll(listPrompt,charactersLV);
         statRadioVB.getChildren().addAll(customRB, defaultRB);
-        //statfield box adds anaonmymouse children
-        statFieldVB.getChildren().addAll(new HBox(new Label("Strength"), new TextField()), new HBox(new Label("Dexterity"), new TextField()),
-                new HBox(new Label("Constitution"), new TextField()), new HBox(new Label("Intelligence"), new TextField()),
-                new HBox(new Label ("Wisdom"), new TextField()), new HBox(new Label("Charisma"), new TextField()));
+        //statfield box adds anonymous children
+        statFieldVB.getChildren().addAll(strengthLB, strengthTF, dexLB, dexTF, constLB, constTF, intelLB, intelTF, wisLB, wisTF, charLB, charTF);
+        centerVB.getChildren().addAll(statFieldHB, characterIV);
         statFieldHB.getChildren().addAll(statFieldVB, statRadioVB);
         //borderPanes
         CharacterCreationBox.setBottom(createCharacterHB);
         CharacterCreationBox.setRight(characterClassVB);
         CharacterCreationBox.setLeft(listVB);
-        CharacterCreationBox.setCenter(statFieldHB);
+        CharacterCreationBox.setCenter(centerVB);
+
+        /******************************************************************************************
+         * ******************     margins, sizes, alignments, etc.      ***************************
+         * ****************************************************************************************
+         */
+        //images
+        characterIV.setFitWidth(200);
+        characterIV.setPreserveRatio(true);
+        //buttons
+        createCharacter.getStyleClass().add("buttons");
+        deleteCharacter.getStyleClass().add("buttons");
+        //boxes
+        createCharacterHB.setSpacing(15);
+        createCharacterHB.setPadding(new Insets(0,0,10,0));
+        centerVB.getStyleClass().add("centerBox");
+        statFieldVB.getStyleClass().add("statBox");
+        statFieldHB.getStyleClass().add("statField");
+        //Textfields
+        nameTF.getStyleClass().add("characterName");
+        //panes
+            //dummy top pane
+        Pane topPane = new Pane();
+        topPane.setPrefSize(0,0);
+        CharacterCreationBox.setTop(topPane);
+
+        /******************************************************************************************************8
+         * ********************        Action Handling       *************************************************
+         * *************************************************************************************************/
+
+        //class type radios
+        fighterRB.setOnAction(e -> {
+            if (fighterRB.isSelected()){
+                characterIV.setImage(fighterImg);
+            }
+        });
+        rogueRB.setOnAction(e -> {
+            if (rogueRB.isSelected()){
+                characterIV.setImage(rogueImg);
+            }
+        });
+        wizardRB.setOnAction(e -> {
+            if (wizardRB.isSelected()){
+                characterIV.setImage(wizardImg);
+            }
+        });
+        bardRB.setOnAction(e -> {
+            if (bardRB.isSelected()){
+                characterIV.setImage(bardImg);
+            }
+        });
+        //stat fields
+        defaultRB.setOnAction(e ->{
+            if (defaultRB.isSelected()){
+                strengthTF.setText("5");
+                dexTF.setText("5");
+                constTF.setText("5");
+                wisTF.setText("5");
+                intelTF.setText("5");
+                charTF .setText("5");
+            }
+        });
+            //action button for when the create button is hit
+        createCharacter.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Character newCharacter = new Character(nameTF.getText()); //create a new character
+                    //create stats array to fill the character stats array
+                int [] newStats = new int[6];
+                newStats[0] = Integer.parseInt(strengthTF.getText()); newStats[1] = Integer.parseInt(dexTF.getText()); newStats[2] = Integer.parseInt(constTF.getText());
+                newStats[3] = Integer.parseInt(wisTF.getText()); newStats[4] = Integer.parseInt(intelTF.getText()); newStats[5] = Integer.parseInt(charTF.getText());
+                    //for each stat call the setStat method and fill
+                for (int count = 0; count < newStats.length; count++) {
+                    newCharacter.setStat(count, newStats[count]);
+                }
+            }
+        });
 
 
-        Scene CharacterCreation = new Scene(CharacterCreationBox, 400, 500);
+
+
+        Scene CharacterCreation = new Scene(CharacterCreationBox, 700, 600);
+        CharacterCreation.getStylesheets().add(getClass().getResource("/styles/CharacterCreator.css").toExternalForm());
         primaryStage.setTitle("Character Creator");
         //add our scene to the primary stage
         primaryStage.setScene(CharacterCreation);

@@ -21,6 +21,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import java.util.ArrayList;
+import javafx.stage.Popup;
 
 public class CharacterCreatorWindow extends Application{
     @Override
@@ -44,9 +46,11 @@ public class CharacterCreatorWindow extends Application{
         VBox statRadioVB = new VBox();
         VBox centerVB = new VBox();
 
+
         //buttons
         Button createCharacter = new Button("Create");
         Button deleteCharacter = new Button("Delete");
+        Button newCharacter = new Button("New Character");
         //character class radios
         ToggleGroup characterClassRadios = new ToggleGroup();
         RadioButton fighterRB = new RadioButton("Fighter"); RadioButton rogueRB = new RadioButton("Rogue"); RadioButton wizardRB = new RadioButton("Wizard"); RadioButton bardRB = new RadioButton("Bard");
@@ -79,6 +83,7 @@ public class CharacterCreatorWindow extends Application{
 
 
 
+
         /**********************************************************************************************
          * *********************add children*********************************************************
          * *****************************************************************************************/
@@ -86,7 +91,7 @@ public class CharacterCreatorWindow extends Application{
         characterClassVB.getChildren().addAll(fighterRB, rogueRB, wizardRB, bardRB);
         //boxes
         createCharacterHB.getChildren().addAll(deleteCharacter,namePrompt,nameTF,createCharacter);
-        listVB.getChildren().addAll(listPrompt,charactersLV);
+        listVB.getChildren().addAll(listPrompt,newCharacter,charactersLV);
         statRadioVB.getChildren().addAll(customRB, defaultRB);
         //statfield box adds anonymous children
         statFieldVB.getChildren().addAll(strengthLB, strengthTF, dexLB, dexTF, constLB, constTF, intelLB, intelTF, wisLB, wisTF, charLB, charTF);
@@ -125,7 +130,9 @@ public class CharacterCreatorWindow extends Application{
         /******************************************************************************************************8
          * ********************        Action Handling       *************************************************
          * *************************************************************************************************/
-
+        //Logic fields
+            //character array
+        ArrayList<Character> characterList = new ArrayList<Character>();
         //class type radios
         fighterRB.setOnAction(e -> {
             if (fighterRB.isSelected()){
@@ -158,6 +165,7 @@ public class CharacterCreatorWindow extends Application{
                 charTF .setText("5");
             }
         });
+
             //action button for when the create button is hit
         createCharacter.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -171,12 +179,49 @@ public class CharacterCreatorWindow extends Application{
                 for (int count = 0; count < newStats.length; count++) {
                     newCharacter.setStat(count, newStats[count]);
                 }
+                characterList.add(newCharacter);
+                charactersOL.add(newCharacter.getName()); //add character name to list
+            }
+        });
+            //listview event
+            //listener for when a listview item is selected
+        charactersLV.getSelectionModel().selectedItemProperty().addListener(charSelect ->{
+            createCharacter.setDisable(true); //disable create button
+                //popup action
+            //popup
+            Popup statsPopup = new Popup();
+            int position = charactersLV.getSelectionModel().getSelectedIndex();
+            String name = characterList.get(position).getName();
+                //create labels to dynamically fill the pop up with character info
+            Label namePopLB = new Label(characterList.get(position).getName());
+            Label strengthPopLB = new Label(String.valueOf(characterList.get(position).getStat(0))); Label dexPopLB = new Label(String.valueOf(characterList.get(position).getStat(1))); Label constPopLB = new Label(String.valueOf(characterList.get(position).getStat(2))); Label intelPopLB = new Label(String.valueOf(characterList.get(position).getStat(3))); Label wisPopLB = new Label(String.valueOf(characterList.get(position).getStat(4))); Label charPopLB = new Label(String.valueOf(characterList.get(position).getStat(5)));
+            VBox mainPane = new VBox();
+            mainPane.getChildren().addAll(namePopLB,new HBox(new Label("Strength: "), strengthPopLB), new HBox(new Label("Dexterity: "), dexPopLB), new HBox(new Label("Constitution: "), constPopLB), new HBox(new Label("Intelligence: "), intelPopLB), new HBox(new Label("Wisdom: "), wisPopLB), new HBox(new Label("Charisma: "), charPopLB));
+
+            Stage popUpStage = new Stage();
+            popUpStage.setTitle("Character Info");
+            Scene popUpScene = new Scene(mainPane, 250, 250);
+            popUpStage.setScene(popUpScene);
+            popUpStage.show();
+        });
+            //enable create character button
+        newCharacter.setOnAction(e ->{
+            createCharacter.setDisable(false);
+        });
+
+            //delete
+        deleteCharacter.setOnAction(e ->{
+            int position = charactersLV.getSelectionModel().getSelectedIndex();
+            if(position>0){
+               characterList.remove(position);
+               charactersOL.remove(position);
             }
         });
 
 
 
 
+            //create scene
         Scene CharacterCreation = new Scene(CharacterCreationBox, 700, 600);
         CharacterCreation.getStylesheets().add(getClass().getResource("/styles/CharacterCreator.css").toExternalForm());
         primaryStage.setTitle("Character Creator");

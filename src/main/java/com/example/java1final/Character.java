@@ -16,6 +16,11 @@ public class Character {
     };
 
         //constructor
+            //default no arg
+    public Character() {
+        this.name = "";
+        this.stats = new int[STATSIZE];
+    }
     public Character(String name){
         this.name = name;
         this.stats = new int[STATSIZE];
@@ -24,4 +29,16 @@ public class Character {
     public void setStat(int stat, int statSize){
         this.stats[stat] = statSize;
     };
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+        //getters
+    public int getStat(int stat){
+        return stats[stat];
+    }
+    public String getName(){
+        return name;
+    }
 }

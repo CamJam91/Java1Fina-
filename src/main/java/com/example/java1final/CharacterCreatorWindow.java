@@ -192,7 +192,7 @@ public class CharacterCreatorWindow extends Application{
             Popup statsPopup = new Popup();
             int position = charactersLV.getSelectionModel().getSelectedIndex();
             String name = characterList.get(position).getName();
-                //create labels to dynamically fill the pop up with character info
+                //create labels to dynamically fill the popup with character info
             Label namePopLB = new Label(characterList.get(position).getName());
             Label strengthPopLB = new Label(String.valueOf(characterList.get(position).getStat(0))); Label dexPopLB = new Label(String.valueOf(characterList.get(position).getStat(1))); Label constPopLB = new Label(String.valueOf(characterList.get(position).getStat(2))); Label intelPopLB = new Label(String.valueOf(characterList.get(position).getStat(3))); Label wisPopLB = new Label(String.valueOf(characterList.get(position).getStat(4))); Label charPopLB = new Label(String.valueOf(characterList.get(position).getStat(5)));
             VBox mainPane = new VBox();
@@ -211,8 +211,8 @@ public class CharacterCreatorWindow extends Application{
 
             //delete
         deleteCharacter.setOnAction(e ->{
-            int position = charactersLV.getSelectionModel().getSelectedIndex();
-            if(position>0){
+           int position = charactersLV.getSelectionModel().getSelectedIndex();
+            if(position>=0){
                characterList.remove(position);
                charactersOL.remove(position);
             }

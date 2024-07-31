@@ -5,17 +5,15 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ListView;
+import java.io.IOException;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -181,6 +179,16 @@ public class CharacterCreatorWindow extends Application{
                 }
                 characterList.add(newCharacter);
                 charactersOL.add(newCharacter.getName()); //add character name to list
+                try{
+                    FileHandler characterFile = new FileHandler("CharacterFile");
+                }catch(IOException CharacterFileNotFound){
+                    StackPane errorPage = new StackPane(new Label("Character file not found"));
+                    Stage errorStage = new Stage();
+                    errorStage.setTitle("Character Info");
+                    Scene errorScene = new Scene(errorPage, 100, 100);
+                    errorStage.setScene(errorScene);
+                    errorStage.show();
+                }
             }
         });
             //listview event

@@ -9,45 +9,48 @@ public class FileHandler {
 
     //constructors
     //writer
-    public FileHandler(String fileName, boolean append)
-            throws IOException {
-        this.charOut = new BufferedWriter(new FileWriter(fileName, append));
+    public FileHandler(String fileName, boolean append) {
+        try {
+            this.charOut = new BufferedWriter(new FileWriter(fileName, append));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //reader
-    public FileHandler(String fileName) throws IOException {
-        this.charIn = new BufferedReader(new FileReader(fileName));
+    public FileHandler(String fileName){
+        try {
+            this.charIn = new BufferedReader(new FileReader(fileName));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //destructors
-    public void closeWriter() throws IOException {
+    public void closeWriter(){
         if (charOut != null) {
-            charOut.close();
+            try {
+                charOut.close();
+            } catch (IOException fileNotFound) {
+                throw new RuntimeException(fileNotFound.getMessage());
+            }
         }
     }
 
-    public void closeReader() throws IOException {
+    public void closeReader(){
         if (charIn != null) {
-            charIn.close();
+            try {
+                charIn.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-    }
-
-    //Writing
-    public void writeData(Character charSave) throws IOException {
-
-        //name is seperated from stats with newline
-        charOut.write(charSave.getName() + " ");
-        charOut.newLine();
-        for (int count = 0; count < Character.STATSIZE; count++) { //add stats
-            charOut.write(String.valueOf(charSave.getStat(count) + " "));
-        }
-        charOut.newLine();
     }
 
     //reading
         //reads the data in the character file, creating Character objects and storing them in an array that
         //is then returned
-    public static ArrayList<Character> readCharacter(String fileName){
+    public static ArrayList<Character> readCharacter(File fileName){
         ArrayList<Character> characters = new ArrayList<>();
         try{
             BufferedReader charIn = new BufferedReader(new FileReader(fileName));
@@ -66,18 +69,21 @@ public class FileHandler {
         return characters;
     }
         //writing
-    public static void characterWriter(String charFile, ArrayList<Character> characters){
+    public static int characterWriter(File charFile, ArrayList<Character> characters){
         try {
             BufferedWriter charOut = new BufferedWriter(new FileWriter(charFile));
             for (int count = 0; count < characters.size(); count++) {
                 charOut.write(characters.get(count).getName());
+                charOut.newLine();
                 for (int stat = 0; stat < Character.STATSIZE; stat++) {
                     charOut.write(String.valueOf(characters.get(count).getStat(stat)));
+                    charOut.newLine();
                 }
             }
             charOut.close();
+            return 0;
         }catch(IOException fileNotFoundError){
-            System.out.println("File not found");
+            return 1;
         }
     }
 }

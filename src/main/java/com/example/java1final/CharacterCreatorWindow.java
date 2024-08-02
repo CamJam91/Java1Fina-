@@ -26,20 +26,23 @@ import javafx.stage.Popup;
 public class CharacterCreatorWindow extends Application{
     @Override
     public void start(Stage primaryStage){
+        File charFile = new File("CharacterData.txt");
         //error popUp
         StackPane errorPage = new StackPane(new Label("Character file not found"));
         Stage errorStage = new Stage();
         errorStage.setTitle("Character Info");
         Scene errorScene = new Scene(errorPage, 200, 100);
         errorStage.setScene(errorScene);
+
         //lists
         ArrayList<String> characterNames = new ArrayList<>(); //holds character names for user viewing
-        ArrayList<Character>characters = FileHandler.readCharacter("CharacterData.txt");
+        ArrayList<Character>characters = FileHandler.readCharacter(charFile);
         for (Character character : characters) {
             characterNames.add(character.getName()); //get names from character array
              }//import file data into char array
 
 
+        //list view
         ObservableList<String> charactersOL = FXCollections.observableArrayList(characterNames);
         ListView<String> charactersLV = new ListView<>(charactersOL);
         //pane
@@ -92,10 +95,6 @@ public class CharacterCreatorWindow extends Application{
         Image bardImg = new Image(getClass().getResourceAsStream("/images/bard.jpg"));
         ImageView characterIV = new ImageView(defaultImg);
 
-        //Files
-        File charFile = new File("CharacterData.txt");
-
-
 
 
         /**********************************************************************************************
@@ -141,12 +140,12 @@ public class CharacterCreatorWindow extends Application{
         topPane.setPrefSize(0,0);
         CharacterCreationBox.setTop(topPane);
 
-        /******************************************************************************************************8
+        /******************************************************************************************************
          * ********************        Action Handling       *************************************************
          * *************************************************************************************************/
         //Logic fields
             //character array
-        ArrayList<Character> characterList = new ArrayList<Character>();
+        //ArrayList<Character> characterList = new ArrayList<Character>();
         //class type radios
         fighterRB.setOnAction(e -> {
             if (fighterRB.isSelected()){
@@ -193,15 +192,11 @@ public class CharacterCreatorWindow extends Application{
                 for (int count = 0; count < newStats.length; count++) {
                     newCharacter.setStat(count, newStats[count]);
                 }
-                characterList.add(newCharacter);
+                characters.add(newCharacter); //add object to file
                 charactersOL.add(newCharacter.getName()); //add character name to list
-                try{
-                    FileHandler charSave = new FileHandler("CharacterData.txt", true);
-                    charSave.writeData(newCharacter);
-                    charSave.closeWriter();
-                }catch(IOException CharacterFileNotFound){
+                int charWrite = FileHandler.characterWriter(charFile,characters);
+                if (charWrite > 0)
                     errorStage.show();
-                }
             }
         });
             //listview event
@@ -239,10 +234,12 @@ public class CharacterCreatorWindow extends Application{
            int position = charactersLV.getSelectionModel().getSelectedIndex();
             if(position>=0){
                 //delete in GUI
-                characterList.remove(position);
-                charactersOL.remove(position);
+                characters.remove(position); //delete in char array
+                charactersOL.remove(position); //delete in observable list
                 //delete in file
-                FileHandler.characterWriter("CharacterData.txt", characters);
+                int charWrite = FileHandler.characterWriter(charFile, characters);
+                if (charWrite > 0)
+                    errorStage.show();
             }
 
         });
@@ -251,10 +248,6 @@ public class CharacterCreatorWindow extends Application{
          * *********        Startup Code         **********************
          * ************************************************************
          */
-
-
-
-
 
         //create scene
         Scene CharacterCreation = new Scene(CharacterCreationBox, 700, 600);

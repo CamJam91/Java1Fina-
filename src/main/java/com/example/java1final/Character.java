@@ -1,5 +1,7 @@
 package com.example.java1final;
 
+import java.io.*;
+
 public class Character {
     final static int STATSIZE = 6;
     public String name;
@@ -41,4 +43,5 @@ public class Character {
     public String getName(){
         return name;
     }
+
 }

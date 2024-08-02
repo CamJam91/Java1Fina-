@@ -3,7 +3,6 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -13,6 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ListView;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import javafx.collections.FXCollections;
@@ -25,9 +26,21 @@ import javafx.stage.Popup;
 public class CharacterCreatorWindow extends Application{
     @Override
     public void start(Stage primaryStage){
+        //error popUp
+        StackPane errorPage = new StackPane(new Label("Character file not found"));
+        Stage errorStage = new Stage();
+        errorStage.setTitle("Character Info");
+        Scene errorScene = new Scene(errorPage, 200, 100);
+        errorStage.setScene(errorScene);
         //lists
-        ArrayList<String> characters = new ArrayList<>();
-        ObservableList<String> charactersOL = FXCollections.observableArrayList(characters);
+        ArrayList<String> characterNames = new ArrayList<>(); //holds character names for user viewing
+        ArrayList<Character>characters = FileHandler.readCharacter("CharacterData.txt");
+        for (Character character : characters) {
+            characterNames.add(character.getName()); //get names from character array
+             }//import file data into char array
+
+
+        ObservableList<String> charactersOL = FXCollections.observableArrayList(characterNames);
         ListView<String> charactersLV = new ListView<>(charactersOL);
         //pane
         //main window
@@ -78,6 +91,9 @@ public class CharacterCreatorWindow extends Application{
         Image wizardImg = new Image(getClass().getResourceAsStream("/images/wizard.jpg"));
         Image bardImg = new Image(getClass().getResourceAsStream("/images/bard.jpg"));
         ImageView characterIV = new ImageView(defaultImg);
+
+        //Files
+        File charFile = new File("CharacterData.txt");
 
 
 
@@ -180,13 +196,10 @@ public class CharacterCreatorWindow extends Application{
                 characterList.add(newCharacter);
                 charactersOL.add(newCharacter.getName()); //add character name to list
                 try{
-                    FileHandler characterFile = new FileHandler("CharacterFile");
+                    FileHandler charSave = new FileHandler("CharacterData.txt", true);
+                    charSave.writeData(newCharacter);
+                    charSave.closeWriter();
                 }catch(IOException CharacterFileNotFound){
-                    StackPane errorPage = new StackPane(new Label("Character file not found"));
-                    Stage errorStage = new Stage();
-                    errorStage.setTitle("Character Info");
-                    Scene errorScene = new Scene(errorPage, 100, 100);
-                    errorStage.setScene(errorScene);
                     errorStage.show();
                 }
             }
@@ -198,19 +211,23 @@ public class CharacterCreatorWindow extends Application{
                 //popup action
             //popup
             Popup statsPopup = new Popup();
-            int position = charactersLV.getSelectionModel().getSelectedIndex();
-            String name = characterList.get(position).getName();
+                for (Character character : characters) {
+                    characterNames.add(character.getName()); //get names from character array
+                }
+                int position = charactersLV.getSelectionModel().getSelectedIndex();
+                Character character = characters.get(position);
                 //create labels to dynamically fill the popup with character info
-            Label namePopLB = new Label(characterList.get(position).getName());
-            Label strengthPopLB = new Label(String.valueOf(characterList.get(position).getStat(0))); Label dexPopLB = new Label(String.valueOf(characterList.get(position).getStat(1))); Label constPopLB = new Label(String.valueOf(characterList.get(position).getStat(2))); Label intelPopLB = new Label(String.valueOf(characterList.get(position).getStat(3))); Label wisPopLB = new Label(String.valueOf(characterList.get(position).getStat(4))); Label charPopLB = new Label(String.valueOf(characterList.get(position).getStat(5)));
-            VBox mainPane = new VBox();
-            mainPane.getChildren().addAll(namePopLB,new HBox(new Label("Strength: "), strengthPopLB), new HBox(new Label("Dexterity: "), dexPopLB), new HBox(new Label("Constitution: "), constPopLB), new HBox(new Label("Intelligence: "), intelPopLB), new HBox(new Label("Wisdom: "), wisPopLB), new HBox(new Label("Charisma: "), charPopLB));
+                Label namePopLB = new Label(characters.get(position).getName());
+                Label strengthPopLB = new Label(String.valueOf(characters.get(position).getStat(0))); Label dexPopLB = new Label(String.valueOf(characters.get(position).getStat(1))); Label constPopLB = new Label(String.valueOf(characters.get(position).getStat(2))); Label intelPopLB = new Label(String.valueOf(characters.get(position).getStat(3))); Label wisPopLB = new Label(String.valueOf(characters.get(position).getStat(4))); Label charPopLB = new Label(String.valueOf(characters.get(position).getStat(5)));
+                VBox mainPane = new VBox();
+                mainPane.getChildren().addAll(namePopLB,new HBox(new Label("Strength: "), strengthPopLB), new HBox(new Label("Dexterity: "), dexPopLB), new HBox(new Label("Constitution: "), constPopLB), new HBox(new Label("Intelligence: "), intelPopLB), new HBox(new Label("Wisdom: "), wisPopLB), new HBox(new Label("Charisma: "), charPopLB));
 
-            Stage popUpStage = new Stage();
-            popUpStage.setTitle("Character Info");
-            Scene popUpScene = new Scene(mainPane, 250, 250);
-            popUpStage.setScene(popUpScene);
-            popUpStage.show();
+                Stage popUpStage = new Stage();
+                popUpStage.setTitle("Character Info");
+                Scene popUpScene = new Scene(mainPane, 250, 250);
+                popUpStage.setScene(popUpScene);
+                popUpStage.show();
+
         });
             //enable create character button
         newCharacter.setOnAction(e ->{
@@ -221,15 +238,25 @@ public class CharacterCreatorWindow extends Application{
         deleteCharacter.setOnAction(e ->{
            int position = charactersLV.getSelectionModel().getSelectedIndex();
             if(position>=0){
-               characterList.remove(position);
-               charactersOL.remove(position);
+                //delete in GUI
+                characterList.remove(position);
+                charactersOL.remove(position);
+                //delete in file
+                FileHandler.characterWriter("CharacterData.txt", characters);
             }
+
         });
 
+        /**************************************************************
+         * *********        Startup Code         **********************
+         * ************************************************************
+         */
 
 
 
-            //create scene
+
+
+        //create scene
         Scene CharacterCreation = new Scene(CharacterCreationBox, 700, 600);
         CharacterCreation.getStylesheets().add(getClass().getResource("/styles/CharacterCreator.css").toExternalForm());
         primaryStage.setTitle("Character Creator");

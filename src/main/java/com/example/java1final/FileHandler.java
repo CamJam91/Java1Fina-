@@ -18,7 +18,7 @@ public class FileHandler {
     }
 
     //reader
-    public FileHandler(String fileName){
+    public FileHandler(String fileName) {
         try {
             this.charIn = new BufferedReader(new FileReader(fileName));
         } catch (FileNotFoundException e) {
@@ -27,7 +27,7 @@ public class FileHandler {
     }
 
     //destructors
-    public void closeWriter(){
+    public void closeWriter() {
         if (charOut != null) {
             try {
                 charOut.close();
@@ -37,7 +37,7 @@ public class FileHandler {
         }
     }
 
-    public void closeReader(){
+    public void closeReader() {
         if (charIn != null) {
             try {
                 charIn.close();
@@ -48,11 +48,11 @@ public class FileHandler {
     }
 
     //reading
-        //reads the data in the character file, creating Character objects and storing them in an array that
-        //is then returned
-    public static ArrayList<Character> readCharacter(File fileName){
+    //reads the data in the character file, creating Character objects and storing them in an array that
+    //is then returned
+    public static ArrayList<Character> readCharacter(File fileName) {
         ArrayList<Character> characters = new ArrayList<>();
-        try{
+        try {
             BufferedReader charIn = new BufferedReader(new FileReader(fileName));
             int count = 0;
             String line;
@@ -62,14 +62,17 @@ public class FileHandler {
                     tempChar.setStat(stat, Integer.parseInt(charIn.readLine()));
                 }
                 characters.add(tempChar); //add Character to our array
+                charIn.close();
             }
-        }catch(IOException fileNotFoundException){
+        } catch (IOException fileNotFoundException) {
             System.out.println("File not found");
         }
         return characters;
     }
-        //writing
-    public static int characterWriter(File charFile, ArrayList<Character> characters){
+
+    //writing
+        //create a BufferedWriter, write data to file
+    public static int characterWriter(File charFile, ArrayList<Character> characters) {
         try {
             BufferedWriter charOut = new BufferedWriter(new FileWriter(charFile));
             for (int count = 0; count < characters.size(); count++) {
@@ -82,7 +85,7 @@ public class FileHandler {
             }
             charOut.close();
             return 0;
-        }catch(IOException fileNotFoundError){
+        } catch (IOException fileNotFoundError) {
             return 1;
         }
     }

@@ -26,8 +26,9 @@ import javafx.stage.Popup;
 public class CharacterCreatorWindow extends Application{
     @Override
     public void start(Stage primaryStage){
+        //file for saving data
         File charFile = new File("CharacterData.txt");
-        //error popUp
+        //error popUp for IOExceptions
         StackPane errorPage = new StackPane(new Label("Character file not found"));
         Stage errorStage = new Stage();
         errorStage.setTitle("Character Info");
@@ -36,7 +37,7 @@ public class CharacterCreatorWindow extends Application{
 
         //lists
         ArrayList<String> characterNames = new ArrayList<>(); //holds character names for user viewing
-        ArrayList<Character>characters = FileHandler.readCharacter(charFile);
+        ArrayList<Character>characters = FileHandler.readCharacter(charFile); //holds character objects for exporting and importing data
         for (Character character : characters) {
             characterNames.add(character.getName()); //get names from character array
              }//import file data into char array
@@ -67,6 +68,7 @@ public class CharacterCreatorWindow extends Application{
         Button newCharacter = new Button("New Character");
         //character class radios
         ToggleGroup characterClassRadios = new ToggleGroup();
+            //radio buttons that trigger image changes
         RadioButton fighterRB = new RadioButton("Fighter"); RadioButton rogueRB = new RadioButton("Rogue"); RadioButton wizardRB = new RadioButton("Wizard"); RadioButton bardRB = new RadioButton("Bard");
         fighterRB.setToggleGroup(characterClassRadios); rogueRB.setToggleGroup(characterClassRadios); wizardRB.setToggleGroup(characterClassRadios); bardRB.setToggleGroup(characterClassRadios);
         //stats radios
@@ -143,9 +145,6 @@ public class CharacterCreatorWindow extends Application{
         /******************************************************************************************************
          * ********************        Action Handling       *************************************************
          * *************************************************************************************************/
-        //Logic fields
-            //character array
-        //ArrayList<Character> characterList = new ArrayList<Character>();
         //class type radios
         fighterRB.setOnAction(e -> {
             if (fighterRB.isSelected()){
@@ -179,7 +178,7 @@ public class CharacterCreatorWindow extends Application{
             }
         });
 
-            //action button for when the create button is hit
+            //action button for when the create button is hit, Character.name is added to listview, Character object stats are added to characaters array then file
         createCharacter.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -194,7 +193,7 @@ public class CharacterCreatorWindow extends Application{
                 }
                 characters.add(newCharacter); //add object to file
                 charactersOL.add(newCharacter.getName()); //add character name to list
-                int charWrite = FileHandler.characterWriter(charFile,characters);
+                int charWrite = FileHandler.characterWriter(charFile,characters); //write to file, return nonzero on fail
                 if (charWrite > 0)
                     errorStage.show();
             }
@@ -217,6 +216,7 @@ public class CharacterCreatorWindow extends Application{
                 VBox mainPane = new VBox();
                 mainPane.getChildren().addAll(namePopLB,new HBox(new Label("Strength: "), strengthPopLB), new HBox(new Label("Dexterity: "), dexPopLB), new HBox(new Label("Constitution: "), constPopLB), new HBox(new Label("Intelligence: "), intelPopLB), new HBox(new Label("Wisdom: "), wisPopLB), new HBox(new Label("Charisma: "), charPopLB));
 
+                    //show popUp
                 Stage popUpStage = new Stage();
                 popUpStage.setTitle("Character Info");
                 Scene popUpScene = new Scene(mainPane, 250, 250);
@@ -231,14 +231,14 @@ public class CharacterCreatorWindow extends Application{
 
             //delete
         deleteCharacter.setOnAction(e ->{
-           int position = charactersLV.getSelectionModel().getSelectedIndex();
-            if(position>=0){
+           int position = charactersLV.getSelectionModel().getSelectedIndex(); //get positin of target object
+            if(position>=0){ //ensure legal position
                 //delete in GUI
                 characters.remove(position); //delete in char array
                 charactersOL.remove(position); //delete in observable list
                 //delete in file
-                int charWrite = FileHandler.characterWriter(charFile, characters);
-                if (charWrite > 0)
+                int charWrite = FileHandler.characterWriter(charFile, characters); //update fiile
+                if (charWrite > 0) //show error on nonzero value
                     errorStage.show();
             }
 
